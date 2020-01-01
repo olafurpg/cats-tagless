@@ -1,11 +1,5 @@
----
-layout: home
-title: Home
-section: home
-position: 1
----
-
-```scala mdoc:silent:reset-object
+package minimize
+object app {
 import cats.tagless._
 import util.Try
 import cats.tagless.implicits._
@@ -23,11 +17,11 @@ trait ExpressionAlg[F[_]] {
   def divide(dividend: Float, divisor: Float): F[Float]
 }
 import ExpressionAlg.autoDerive._
-import Increment.autoDerive._
 @finalAlg @autoFunctorK
 trait Increment[F[_]] {
   def plusOne(i: Int): F[Int]
 }
+import Increment.autoDerive._
 
 implicit object incTry extends Increment[Try] {
   def plusOne(i: Int) = Try(i + 1)
@@ -41,4 +35,4 @@ def program[F[_]: Monad: Increment](i: Int): F[Int] = for {
 
 implicit def toFree[F[_]]: F ~> Free[F, *] = λ[F ~> Free[F, *]](t => Free.liftF(t))
 program[Free[Try, *]](0).foldMap(FunctionK.id)
-```
+}
